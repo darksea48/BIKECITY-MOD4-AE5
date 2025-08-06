@@ -79,18 +79,3 @@ class Cliente():
         self.apellido = apellido
         self.telefono = telefono
         self.email = email
-
-
-douglas hiciste el repo?
-
-estoy en ello
-lo compartire con uds a ds
-
-yo t tengo en discord
-
-si :) 
-
-hago el repo en github y lo subo de inmediato
-voy a copiar el codigo a la carpeta nueva y les mando el link de github
-
-copiado
