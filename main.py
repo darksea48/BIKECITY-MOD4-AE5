@@ -1,81 +1,57 @@
+from Clases import Bike, Reservation, InvalidReservationError, BikeUnavailableError
 from datetime import datetime
-import random
 
-class BikeUnavailableError(Exception):
-    def __init__(self, mensaje):
-        self.mensaje = mensaje
-        super().__init__(self.mensaje)
+#Creación primera bicicleta
+oxford1 = Bike("Oxford X1")
+print(oxford1.modelo)
+print(oxford1.estado)
 
-class InvalidReservationError(Exception):
-    def __init__(self, mensaje):
-        self.mensaje = mensaje
-        super().__init__(self.mensaje)
+#Intentar reservar
+try:
+    reserva1 = Reservation(oxford1, "Conan", estado = "Activa", inicio=datetime(2025, 8, 6, 20, 0), fin=datetime(2025, 8, 6, 22, 30))
 
-class Bike():
-    def __init__(self, modelo, estado="Disponible"):
-        self.modelo = modelo
-        self.estado = estado
-    
-    def cambiar_estado(self, nuevo_estado):
-        try:
-            if nuevo_estado != self.estado:
-                self.estado = nuevo_estado
-            else:
-                if self.estado == "Ocupado":
-                    mensaje ="El artículo se encuentra Ocupado"
-                else:
-                    mensaje ="El artículo ya se encuentra Disponible"
-                raise BikeUnavailableError(mensaje)
-        except BikeUnavailableError as e:
-            print(f"Error: {e}")
-            
-    def comprobar_estado(self, nuevo_estado):
-        try:
-            if nuevo_estado == "Ocupado" or nuevo_estado == "Disponible":
-                self.cambiar_estado(nuevo_estado)
-            else:
-                raise ValueError("El estado debe ser 'Ocupado' o 'Disponible'")
-        except ValueError as e:
-            print(f"Error: {e}")
+except InvalidReservationError as e:
+    print(f"Error: {e}")
+except BikeUnavailableError as e:
+    print(f"Error: {e}")
+finally:
+    print("Se intentó la reserva.")
 
-class Reservation():
-    tarifa_por_hora = 10
-    
-    def __init__(self, bici, cliente, estado="Activa", inicio=datetime.now(), fin=datetime.now()):
-        self.bici = bici
-        self.cliente = cliente
-        self.inicio = inicio
-        self.fin = fin
-        self.duracion = self.calcular_duracion(inicio, fin)
-        self.precio = self.duracion * self.tarifa_por_hora
-        self.estado = estado
+#Intentar reservar la misma bicicleta
+try:
+    reserva2 = Reservation(oxford1, "Gokú", estado = "Activa", inicio=datetime(2025, 8, 6, 20, 0), fin=datetime(2025, 8, 6, 22, 30))
 
-    def finalizar(self):
-        try:
-            if self.estado == "Activa":
-                self.estado = "Finalizada"
-                self.bici.comprobar_estado("Disponible")
-            else:
-                raise BikeUnavailableError("La bicicleta no está ocupada")
-        except BikeUnavailableError as e:
-            print(f"Error: {e}")
-            
-    @staticmethod
-    def calcular_duracion(inicio, fin):
-        try: 
-            if fin < inicio:
-                raise InvalidReservationError     
-        
-            duracion_segundos = (fin - inicio).total_seconds()
-            duracion_horas = duracion_segundos / 3600
-            return round(duracion_horas)
-        except InvalidReservationError as e:
-            raise InvalidReservationError(f"Error en la duracion: {e}")
+except InvalidReservationError as e:
+    print(f"Error: {e}")
+except BikeUnavailableError as e:
+    print(f"Error: {e}")
+finally:
+    print("Se intentó la reserva.")
 
-class Cliente():
-    def __init__(self, nombre, apellido, telefono, email, id=random.randint(1000, 9999)):
-        self.id = id
-        self.nombre = nombre
-        self.apellido = apellido
-        self.telefono = telefono
-        self.email = email
+
+#Intentar reservar con horarios inválidos
+oxford2 = Bike("Oxford X2")
+try:
+    reserva3 = Reservation(oxford2, "Mikasa", estado = "Activa", inicio=datetime(2025, 8, 6, 20, 0), fin=datetime(2025, 8, 6, 14, 30))
+
+except InvalidReservationError as e:
+    print(f"Error: {e}")
+except BikeUnavailableError as e:
+    print(f"Error: {e}")
+finally:
+    print("Se intentó la reserva.")
+
+#Finalizar reserva 1
+reserva1.finalizar()
+print(f"Estado {oxford1.modelo}: {oxford1.estado}")
+
+#Intentar reservar nuevamente la primera bicicleta
+try:
+    reserva3 = Reservation(oxford1, "Teemo", estado = "Activa", inicio=datetime(2025, 8, 7, 12, 0), fin=datetime(2025, 8, 7, 16, 30))
+
+except InvalidReservationError as e:
+    print(f"Error: {e}")
+except BikeUnavailableError as e:
+    print(f"Error: {e}")
+finally:
+    print("Se intentó la reserva.")
