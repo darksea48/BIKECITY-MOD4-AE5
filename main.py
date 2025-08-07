@@ -1,4 +1,4 @@
-from Clases import Bike, Reservation, InvalidReservationError, BikeUnavailableError
+from Clases import * # con * importamos todas las clases del archivo Clases.py
 from datetime import datetime
 
 #Creación primera bicicleta
