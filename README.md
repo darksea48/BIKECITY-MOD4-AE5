@@ -21,7 +21,7 @@
 - Validar fechas de inicio y fin.
 - Calcular duración y precio de la reserva.
 - Finalizar reservas y liberar bicicletas.
-- Manejo de errores con `try/except/finally`.
+- Manejo de errores a traves de captura de excepciones con `try/except/finally`.
 
 ## Ejecución
 
