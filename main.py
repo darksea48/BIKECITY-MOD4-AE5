@@ -42,7 +42,7 @@ except InvalidReservationError as e:
 except BikeUnavailableError as e:
     print(f"Error: {e}")
 finally:
-    print("Se intentó la reserva.")
+    print("Intento de reserva terminado.")
     
 #Intentar reservar una bicicleta no existente
 print("\n----Reserva 4----")
@@ -55,7 +55,7 @@ except BikeUnavailableError as e:
 except Exception as e:
     print(f"Error: {e}")
 finally:
-    print("Se intentó la reserva.")
+    print("Intento de reserva terminado.")
 
 #Finalizar reserva 1
 print("\n----Reserva 1 finalizada----")
@@ -72,4 +72,4 @@ except InvalidReservationError as e:
 except BikeUnavailableError as e:
     print(f"Error: {e}")
 finally:
-    print("Se intentó la reserva.")
+    print("Intento de reserva terminado.")
