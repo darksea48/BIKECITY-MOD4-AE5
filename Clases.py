@@ -3,22 +3,19 @@ import random
 from math import *
 
 class BikeUnavailableError(Exception):
-    def __init__(self, mensaje):
-        self.mensaje = mensaje
-        super().__init__(self.mensaje)
-
+    pass
 class InvalidReservationError(Exception):
-    def __init__(self, mensaje):
-        self.mensaje = mensaje
-        super().__init__(self.mensaje)
-
+    pass
 class Bike():
+    bikes = []
+    
     def __init__(self, modelo, estado="Disponible"):
         self.modelo = modelo
         self.estado = estado
+        self.bikes.append(self)
     
     def cambiar_estado(self, nuevo_estado: str):
-        if nuevo_estado not in ("disponible", "ocupado"):
+        if nuevo_estado not in ("Disponible", "Ocupado"):
             raise ValueError(f"Estado inválido: {nuevo_estado}. Se esperan sólo los valores 'disponible' u 'ocupado'.")
         self.estado = nuevo_estado
         return self
@@ -43,30 +40,31 @@ class Reservation():
             raise BikeUnavailableError(f"La bicicleta {bici.modelo} está ocupada. No se puede reservar esta bicicleta.")
         
         self.bici = bici
-        self.bici.comprobar_estado("Ocupado")
+        self.bici.cambiar_estado("Ocupado")
         self.cliente = cliente
         self.inicio = inicio
         self.fin = fin
         self.duracion = self.calcular_duracion(inicio, fin)
-        self.precio = self.duracion * self.tarifa_por_hora
+        self.precio = ceil(self.duracion) * self.tarifa_por_hora
         self.estado = "Activa"
 
     def finalizar(self):
         try:
             if self.estado == "Activa":
                 self.estado = "Completada"
-                self.bici.comprobar_estado("Disponible")
+                self.bici.cambiar_estado("Disponible")
                 print(f"Precio arriendo: {self.precio}")
             else:
                 raise BikeUnavailableError("La reserva ya está completada.")
         except BikeUnavailableError as e:
             print(f"Error: {e}")
+        return self
             
     @staticmethod
     def calcular_duracion(inicio, fin):   
         duracion_segundos = (fin - inicio).total_seconds()
         duracion_horas = duracion_segundos / 3600
-        return round(duracion_horas)
+        return duracion_horas
        
 
 class Cliente():
