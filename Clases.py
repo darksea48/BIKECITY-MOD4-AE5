@@ -1,5 +1,6 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import random
+from math import *
 
 class BikeUnavailableError(Exception):
     def __init__(self, mensaje):
@@ -16,32 +17,31 @@ class Bike():
         self.modelo = modelo
         self.estado = estado
     
-    def cambiar_estado(self, nuevo_estado):
-        try:
-            if nuevo_estado != self.estado:
-                self.estado = nuevo_estado
-            else:
-                if self.estado == "Ocupado":
-                    mensaje ="El artículo se encuentra Ocupado"
-                else:
-                    mensaje ="El artículo ya se encuentra Disponible"
-                raise BikeUnavailableError(mensaje)
-        except BikeUnavailableError as e:
-            raise BikeUnavailableError(e)
-            
-    def comprobar_estado(self, nuevo_estado):
-        try:
-            if nuevo_estado == "Ocupado" or nuevo_estado == "Disponible":
-                self.cambiar_estado(nuevo_estado)
-            else:
-                raise ValueError("El estado debe ser 'Ocupado' o 'Disponible'")
-        except ValueError as e:
-            print(f"Error: {e}")
-
+    def cambiar_estado(self, nuevo_estado: str):
+        if nuevo_estado not in ("disponible", "ocupado"):
+            raise ValueError(f"Estado inválido: {nuevo_estado}. Se esperan sólo los valores 'disponible' u 'ocupado'.")
+        self.estado = nuevo_estado
+        return self
+    
+    def consulta_estado(self):
+        print(f"Modelo de la bicicleta: {self.modelo}")
+        print(f"Estado de la bicicleta: {self.estado}")
+        return self
+    
+    def __str__(self):
+        return f"Bicicleta nueva agregada: modelo={self.modelo} estado={self.estado}"
+    
 class Reservation():
     tarifa_por_hora = 10
     
-    def __init__(self, bici, cliente, estado="Activa", inicio=datetime.now(), fin=datetime.now()):
+    def __init__(self, bici, cliente, inicio=datetime.now(), fin=datetime.now()):
+        
+        if fin < inicio:
+            raise InvalidReservationError("Las horas de inicio y fin no pueden ser iguales o fin sea anterior a inicio.")
+        
+        if bici.estado != "Disponible":
+            raise BikeUnavailableError(f"La bicicleta {bici.modelo} está ocupada. No se puede reservar esta bicicleta.")
+        
         self.bici = bici
         self.bici.comprobar_estado("Ocupado")
         self.cliente = cliente
@@ -49,30 +49,25 @@ class Reservation():
         self.fin = fin
         self.duracion = self.calcular_duracion(inicio, fin)
         self.precio = self.duracion * self.tarifa_por_hora
-        self.estado = estado
+        self.estado = "Activa"
 
     def finalizar(self):
         try:
             if self.estado == "Activa":
-                self.estado = "Finalizada"
+                self.estado = "Completada"
                 self.bici.comprobar_estado("Disponible")
                 print(f"Precio arriendo: {self.precio}")
             else:
-                raise BikeUnavailableError("La bicicleta no está ocupada")
+                raise BikeUnavailableError("La reserva ya está completada.")
         except BikeUnavailableError as e:
             print(f"Error: {e}")
             
     @staticmethod
-    def calcular_duracion(inicio, fin):
-        try: 
-            if fin < inicio:
-                raise InvalidReservationError("horarios inválidos")     
-        
-            duracion_segundos = (fin - inicio).total_seconds()
-            duracion_horas = duracion_segundos / 3600
-            return round(duracion_horas)
-        except InvalidReservationError as e:
-            raise InvalidReservationError(f"Error en la duracion: {e}")
+    def calcular_duracion(inicio, fin):   
+        duracion_segundos = (fin - inicio).total_seconds()
+        duracion_horas = duracion_segundos / 3600
+        return round(duracion_horas)
+       
 
 class Cliente():
     def __init__(self, nombre, apellido, telefono, email, id=random.randint(1000, 9999)):
